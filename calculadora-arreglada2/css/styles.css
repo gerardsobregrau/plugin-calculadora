@@ -1,0 +1,210 @@
+.cd-wizard {
+  background: #fff;
+  padding: 40px 30px;
+  font-family: 'Poppins', sans-serif;
+  border-radius: 16px;
+  max-width: 750px;
+  margin: auto;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+}
+
+.cd-step-indicator {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  position: relative;
+  counter-reset: wizard;
+}
+
+.cd-step-indicator div {
+  position: relative;
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #999;
+}
+
+.cd-step-indicator div::before {
+  counter-increment: wizard;
+  content: counter(wizard);
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  background: #ccc;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto 10px auto;
+  color: white;
+  font-weight: bold;
+}
+
+.cd-step-indicator div.active::before {
+  background: #0056b3;
+}
+
+.cd-step-indicator div.active {
+  color: #0056b3;
+}
+
+.cd-step {
+  display: none;
+  animation: fadeIn 0.4s ease-in-out;
+}
+.cd-step.active {
+  display: block;
+}
+
+.cd-deuda-bloque {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+}
+
+.cd-deuda-bloque label {
+  display: block;
+  margin-bottom: 5px;
+  margin-top: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+.cd-deuda-bloque label:first-child {
+  margin-top: 0;
+}
+
+input[type='range'] {
+  width: 100%;
+  margin-top: 20px;
+  accent-color: #0056b3;
+}
+
+input[type='number'],
+select {
+  width: 100%;
+  padding: 10px;
+  font-size: 15px;
+  margin: 5px 0 15px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #333;
+}
+
+button {
+  background: #0056b3;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  margin: 15px 10px 0 0;
+  cursor: pointer;
+  font-size: 15px;
+}
+button:hover {
+  background: #004999;
+}
+
+.cd-result-final {
+  font-size: 20px;
+  font-weight: bold;
+  color: #0056b3;
+  margin-bottom: 20px;
+}
+
+.cd-progress {
+  height: 4px;
+  background: #eee;
+  margin-top: 30px;
+  border-radius: 5px;
+}
+.cd-progress-bar {
+  height: 4px;
+  width: 0%;
+  background: #0056b3;
+  transition: width 0.4s ease;
+  border-radius: 5px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Responsive */
+@media screen and (max-width: 600px) {
+  .cd-step-indicator {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+
+/* Contenedor del formulario HubSpot */
+#hubspot-formulario {
+  margin-top: 20px;
+}
+
+/* Mejorar la disposición de los campos */
+#hubspot-formulario form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+/* Cada campo individual */
+#hubspot-formulario form .hs-form-field {
+  flex: 1 1 45%; /* dos columnas, con espacio */
+  min-width: 200px;
+}
+
+/* Para inputs tipo teléfono que tienen un dropdown, ajustamos */
+#hubspot-formulario form .hs-form-field.hs-phone {
+  flex: 1 1 100%;
+}
+
+/* Ajustar el botón enviar */
+#hubspot-formulario form input[type="submit"],
+#hubspot-formulario form button[type="submit"] {
+  background-color: #0056b3 !important;
+  border: none !important;
+  color: white !important;
+  padding: 12px 25px !important;
+  font-size: 16px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s ease;
+  margin-top: 10px !important;
+}
+
+/* Hover del botón */
+#hubspot-formulario form input[type="submit"]:hover,
+#hubspot-formulario form button[type="submit"]:hover {
+  background-color: #004999 !important;
+}
+
+/* Ajustar labels para que estén más compactos */
+#hubspot-formulario form label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+  color: #333;
+}
+
+/* Añadir un poco más de espacio arriba del formulario */
+.cd-step[data-step="3"] #hubspot-formulario {
+  margin-top: 25px;
+}
+
+/* Responsivo: en móvil, los campos en una columna */
+@media (max-width: 600px) {
+  #hubspot-formulario form .hs-form-field {
+    flex: 1 1 100% !important;
+  }
+}
