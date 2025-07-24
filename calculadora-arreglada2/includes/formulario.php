@@ -33,10 +33,7 @@
       <p>Plazo estimado: <span id="cd-plazo"></span> meses</p>
 
       <!-- Contenedor para el formulario HubSpot -->
-      <div id="hubspot-formulario" class="hs-form-frame" 
-           data-region="eu1" 
-           data-form-id="14cf8322-da79-4988-8631-56f6d7eca69f" 
-           data-portal-id="25029379"></div>
+      <div id="hubspot-formulario"></div>
 
       <button type="button" class="cd-prev">Volver</button>
     </div>
@@ -44,69 +41,50 @@
   <div class="cd-progress"><div class="cd-progress-bar"></div></div>
 </div>
 
-<!-- Script oficial de HubSpot para incrustar formularios -->
-<script src="https://js-eu1.hsforms.net/forms/embed/25029379.js" defer></script>
-
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  // Función para prellenar los campos ocultos
-  function prellenarCamposOcultos() {
-    // Buscar el formulario HubSpot en el DOM
-    const hubspotForm = document.querySelector("#hubspot-formulario form");
-    
-    if (hubspotForm) {
-      console.log('✅ Formulario HubSpot encontrado');
-      
-      // Obtener los valores calculados
-      const pagosActuales = document.getElementById("cd-pagos").value;
-      const totalDeuda = document.getElementById("cd-total-pagar").innerText.replace(" €", "");
-      const cuotaMensual = document.getElementById("cd-cuota").innerText.replace(" €", "");
-      const plazoMeses = document.getElementById("cd-plazo").innerText;
-      
-      console.log('📊 Valores a enviar:', {
-        pagos_mensuales_actuales: pagosActuales,
-        total_deuda: totalDeuda,
-        cuota_mensual: cuotaMensual,
-        plazo_meses: plazoMeses
-      });
-      
-      // Crear y agregar campos ocultos
-      const campos = [
-        {name: 'pagos_mensuales_actuales', value: pagosActuales},
-        {name: 'total_deuda', value: totalDeuda},
-        {name: 'cuota_mensual', value: cuotaMensual},
-        {name: 'plazo_meses', value: plazoMeses}
-      ];
-      
-      campos.forEach(campo => {
-        // Verificar si el campo ya existe
-        let input = hubspotForm.querySelector(`input[name="${campo.name}"]`);
-        if (!input) {
-          // Si no existe, crearlo
-          input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = campo.name;
-          hubspotForm.appendChild(input);
-          console.log(`✅ Campo oculto creado: ${campo.name}`);
-        } else {
-          console.log(`ℹ️ Campo ya existía: ${campo.name}`);
-        }
-        input.value = campo.value;
-        console.log(`📝 Campo ${campo.name} = ${campo.value}`);
-      });
-      
-      console.log('✅ Campos ocultos prellenados correctamente');
-      
-    } else {
-      console.log('⏳ Formulario HubSpot no encontrado, reintentando...');
-      setTimeout(prellenarCamposOcultos, 500);
-    }
-  }
-  
-  // Cargar el formulario cuando se hace clic en calcular
   document.getElementById("cd-calc").addEventListener("click", function () {
-    console.log('🎯 Botón calcular pulsado, prellenando campos en 1.5s...');
-    setTimeout(prellenarCamposOcultos, 1500);
+    // Aquí se asume que el cálculo ya se hizo en js/scripts.js y los valores están actualizados
+
+    if (typeof hbspt === "undefined") {
+      let script = document.createElement("script");
+      script.src = "https://js-eu1.hsforms.net/forms/v2.js";
+      script.onload = loadHubspotForm;
+      document.head.appendChild(script);
+    } else {
+      loadHubspotForm();
+    }
   });
+
+  function loadHubspotForm() {
+    // Evitar carga duplicada
+    if (document.querySelector("#hubspot-formulario iframe")) return;
+
+    hbspt.forms.create({
+      region: "eu1",
+      portalId: "25029379",
+      formId: "14cf8322-da79-4988-8631-56f6d7eca69f",
+      target: "#hubspot-formulario",
+      onFormReady: function($form) {
+        const pagosActuales = document.getElementById("cd-pagos").value;
+        const totalDeuda = document.getElementById("cd-total-pagar").innerText.replace(" €", "");
+        const cuotaMensual = document.getElementById("cd-cuota").innerText.replace(" €", "");
+        const plazoMeses = document.getElementById("cd-plazo").innerText;
+
+        const resumen = `🧾 Datos calculadora:\n` +
+                        `- Pagos actuales: ${pagosActuales}\n` +
+                        `- Total deuda: ${totalDeuda}\n` +
+                        `- Nueva cuota mensual: ${cuotaMensual}\n` +
+                        `- Plazo en meses: ${plazoMeses}`;
+
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "resumen_calculadora";  // nombre interno HubSpot
+        input.value = resumen;
+
+        $form[0].appendChild(input);
+      }
+    });
+  }
 });
 </script>

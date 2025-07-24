@@ -46,14 +46,11 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   document.getElementById("cd-calc").addEventListener("click", () => {
-    console.log("Botón calcular pulsado");
     if (validateStep(currentStep)) {
-      console.log("Validación OK");
       calcularResultado();
       currentStep++;
       updateStep();
     } else {
-      console.log("Validación fallida");
       alert("Por favor, introduce tus ingresos mensuales.");
     }
   });

@@ -6,7 +6,6 @@
  * Author: <a href="https://www.gsobregrau.com">Gerard Sobregrau</a>    
  */
 
-
 function cd_enqueue_assets() {
     wp_enqueue_style('cd-styles', plugin_dir_url(__FILE__) . 'css/styles.css');
     wp_enqueue_script('cd-scripts', plugin_dir_url(__FILE__) . 'js/scripts.js', array(), false, true);
