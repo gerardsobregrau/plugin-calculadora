@@ -49,17 +49,26 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  // Función para intentar prellenar los campos
-  function intentarPrellenar() {
+  // Función para prellenar los campos ocultos
+  function prellenarCamposOcultos() {
     // Buscar el formulario HubSpot en el DOM
     const hubspotForm = document.querySelector("#hubspot-formulario form");
     
     if (hubspotForm) {
-      // Si encontramos el formulario, agregar campos ocultos
+      console.log('✅ Formulario HubSpot encontrado');
+      
+      // Obtener los valores calculados
       const pagosActuales = document.getElementById("cd-pagos").value;
       const totalDeuda = document.getElementById("cd-total-pagar").innerText.replace(" €", "");
       const cuotaMensual = document.getElementById("cd-cuota").innerText.replace(" €", "");
       const plazoMeses = document.getElementById("cd-plazo").innerText;
+      
+      console.log('📊 Valores a enviar:', {
+        pagos_mensuales_actuales: pagosActuales,
+        total_deuda: totalDeuda,
+        cuota_mensual: cuotaMensual,
+        plazo_meses: plazoMeses
+      });
       
       // Crear y agregar campos ocultos
       const campos = [
@@ -78,20 +87,26 @@ document.addEventListener("DOMContentLoaded", function () {
           input.type = 'hidden';
           input.name = campo.name;
           hubspotForm.appendChild(input);
+          console.log(`✅ Campo oculto creado: ${campo.name}`);
+        } else {
+          console.log(`ℹ️ Campo ya existía: ${campo.name}`);
         }
         input.value = campo.value;
+        console.log(`📝 Campo ${campo.name} = ${campo.value}`);
       });
       
-      console.log('Campos prellenados correctamente');
+      console.log('✅ Campos ocultos prellenados correctamente');
+      
     } else {
-      // Si no encontramos el formulario, intentar de nuevo
-      setTimeout(intentarPrellenar, 500);
+      console.log('⏳ Formulario HubSpot no encontrado, reintentando...');
+      setTimeout(prellenarCamposOcultos, 500);
     }
   }
   
   // Cargar el formulario cuando se hace clic en calcular
   document.getElementById("cd-calc").addEventListener("click", function () {
-    setTimeout(intentarPrellenar, 1500);
+    console.log('🎯 Botón calcular pulsado, prellenando campos en 1.5s...');
+    setTimeout(prellenarCamposOcultos, 1500);
   });
 });
 </script>
