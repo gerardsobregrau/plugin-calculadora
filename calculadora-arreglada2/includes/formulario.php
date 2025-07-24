@@ -33,7 +33,10 @@
       <p>Plazo estimado: <span id="cd-plazo"></span> meses</p>
 
       <!-- Contenedor para el formulario HubSpot -->
-      <div id="hubspot-formulario"></div>
+      <div id="hubspot-formulario" class="hs-form-frame" 
+           data-region="eu1" 
+           data-form-id="14cf8322-da79-4988-8631-56f6d7eca69f" 
+           data-portal-id="25029379"></div>
 
       <button type="button" class="cd-prev">Volver</button>
     </div>
@@ -41,37 +44,54 @@
   <div class="cd-progress"><div class="cd-progress-bar"></div></div>
 </div>
 
+<!-- Script oficial de HubSpot para incrustar formularios -->
+<script src="https://js-eu1.hsforms.net/forms/embed/25029379.js" defer></script>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  // Cargar el formulario de HubSpot cuando llegue al último paso
-  document.getElementById("cd-calc").addEventListener("click", function () {
-    setTimeout(function() {
-      // Obtener los valores calculados
+  // Función para intentar prellenar los campos
+  function intentarPrellenar() {
+    // Buscar el formulario HubSpot en el DOM
+    const hubspotForm = document.querySelector("#hubspot-formulario form");
+    
+    if (hubspotForm) {
+      // Si encontramos el formulario, agregar campos ocultos
       const pagosActuales = document.getElementById("cd-pagos").value;
       const totalDeuda = document.getElementById("cd-total-pagar").innerText.replace(" €", "");
       const cuotaMensual = document.getElementById("cd-cuota").innerText.replace(" €", "");
       const plazoMeses = document.getElementById("cd-plazo").innerText;
       
-      // Crear el formulario de HubSpot con los campos ocultos prellenados
-      if (typeof hbspt !== 'undefined') {
-        hbspt.forms.create({
-          region: "eu1",
-          portalId: "25029379",
-          formId: "14cf8322-da79-4988-8631-56f6d7eca69f",
-          target: "#hubspot-formulario",
-          onFormReady: function($form) {
-            // Agregar campos ocultos al formulario
-            $form.append('<input type="hidden" name="pagos_mensuales_actuales" value="' + pagosActuales + '">');
-            $form.append('<input type="hidden" name="total_deuda" value="' + totalDeuda + '">');
-            $form.append('<input type="hidden" name="cuota_mensual" value="' + cuotaMensual + '">');
-            $form.append('<input type="hidden" name="plazo_meses" value="' + plazoMeses + '">');
-          }
-        });
-      }
-    }, 500);
+      // Crear y agregar campos ocultos
+      const campos = [
+        {name: 'pagos_mensuales_actuales', value: pagosActuales},
+        {name: 'total_deuda', value: totalDeuda},
+        {name: 'cuota_mensual', value: cuotaMensual},
+        {name: 'plazo_meses', value: plazoMeses}
+      ];
+      
+      campos.forEach(campo => {
+        // Verificar si el campo ya existe
+        let input = hubspotForm.querySelector(`input[name="${campo.name}"]`);
+        if (!input) {
+          // Si no existe, crearlo
+          input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = campo.name;
+          hubspotForm.appendChild(input);
+        }
+        input.value = campo.value;
+      });
+      
+      console.log('Campos prellenados correctamente');
+    } else {
+      // Si no encontramos el formulario, intentar de nuevo
+      setTimeout(intentarPrellenar, 500);
+    }
+  }
+  
+  // Cargar el formulario cuando se hace clic en calcular
+  document.getElementById("cd-calc").addEventListener("click", function () {
+    setTimeout(intentarPrellenar, 1500);
   });
 });
 </script>
-
-<!-- Script oficial de HubSpot -->
-<script src="https://js-eu1.hsforms.net/forms/embed/v1.js"></script>
