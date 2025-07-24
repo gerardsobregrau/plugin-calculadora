@@ -33,10 +33,7 @@
       <p>Plazo estimado: <span id="cd-plazo"></span> meses</p>
 
       <!-- Contenedor para el formulario HubSpot -->
-      <div id="hubspot-formulario" class="hs-form-frame" 
-           data-region="eu1" 
-           data-form-id="14cf8322-da79-4988-8631-56f6d7eca69f" 
-           data-portal-id="25029379"></div>
+      <div id="hubspot-formulario"></div>
 
       <button type="button" class="cd-prev">Volver</button>
     </div>
@@ -44,36 +41,37 @@
   <div class="cd-progress"><div class="cd-progress-bar"></div></div>
 </div>
 
-<!-- Script oficial de HubSpot para incrustar formularios -->
-<script src="https://js-eu1.hsforms.net/forms/embed/25029379.js" defer></script>
-
 <script>
-  // Función para rellenar campos ocultos dentro del iframe de HubSpot
-  function prellenarCampos() {
-    const iframe = document.querySelector("#hubspot-formulario iframe");
-    if (!iframe) {
-      // Si aún no está cargado, prueba otra vez en 300ms
-      setTimeout(prellenarCampos, 300);
-      return;
-    }
-
-    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-
-    function rellenarCampo(name, value) {
-      const input = iframeDoc.querySelector(`input[name="${name}"]`);
-      if (input) input.value = value;
-    }
-
-    rellenarCampo('pagos_mensuales_actuales', document.getElementById("cd-pagos").value);
-    rellenarCampo('total_deuda', document.getElementById("cd-total-pagar").innerText.replace(" €", ""));
-    rellenarCampo('cuota_mensual', document.getElementById("cd-cuota").innerText.replace(" €", ""));
-    rellenarCampo('plazo_meses', document.getElementById("cd-plazo").innerText);
-  }
-
-  document.addEventListener("DOMContentLoaded", function () {
-    // Cuando pulses el botón calcular, luego espera y rellena el formulario
-    document.getElementById("cd-calc").addEventListener("click", function () {
-      setTimeout(prellenarCampos, 1000);
-    });
+document.addEventListener("DOMContentLoaded", function () {
+  // Cargar el formulario de HubSpot cuando llegue al último paso
+  document.getElementById("cd-calc").addEventListener("click", function () {
+    setTimeout(function() {
+      // Obtener los valores calculados
+      const pagosActuales = document.getElementById("cd-pagos").value;
+      const totalDeuda = document.getElementById("cd-total-pagar").innerText.replace(" €", "");
+      const cuotaMensual = document.getElementById("cd-cuota").innerText.replace(" €", "");
+      const plazoMeses = document.getElementById("cd-plazo").innerText;
+      
+      // Crear el formulario de HubSpot con los campos ocultos prellenados
+      if (typeof hbspt !== 'undefined') {
+        hbspt.forms.create({
+          region: "eu1",
+          portalId: "25029379",
+          formId: "14cf8322-da79-4988-8631-56f6d7eca69f",
+          target: "#hubspot-formulario",
+          onFormReady: function($form) {
+            // Agregar campos ocultos al formulario
+            $form.append('<input type="hidden" name="pagos_mensuales_actuales" value="' + pagosActuales + '">');
+            $form.append('<input type="hidden" name="total_deuda" value="' + totalDeuda + '">');
+            $form.append('<input type="hidden" name="cuota_mensual" value="' + cuotaMensual + '">');
+            $form.append('<input type="hidden" name="plazo_meses" value="' + plazoMeses + '">');
+          }
+        });
+      }
+    }, 500);
   });
+});
 </script>
+
+<!-- Script oficial de HubSpot -->
+<script src="https://js-eu1.hsforms.net/forms/embed/v1.js"></script>
