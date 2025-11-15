@@ -15,41 +15,42 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function validateStep(step) {
-    if (step === 0) {
-      return document.getElementById("cd-pagos").value >= 50;
-    } else if (step === 1) {
-      return document.querySelectorAll(".cd-deuda-bloque").length > 0;
-    } else if (step === 2) {
-      return document.getElementById("cd-ingresos").value.trim() !== "";
-    }
+    if (step === 0) return document.getElementById("cd-pagos").value >= 50;
+    if (step === 1) return document.querySelectorAll(".cd-deuda-bloque").length > 0;
+    if (step === 2) return document.getElementById("cd-ingresos").value.trim() !== "";
     return true;
   }
 
-  nextBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      if (validateStep(currentStep)) {
-        currentStep++;
-        updateStep();
-      } else {
-        alert("Por favor, rellena los campos requeridos antes de continuar.");
-      }
-    });
-  });
+  nextBtns.forEach(btn => btn.addEventListener("click", () => {
+    if (validateStep(currentStep)) {
+      currentStep++;
+      updateStep();
+    } else {
+      alert("Por favor, rellena los campos requeridos antes de continuar.");
+    }
+  }));
 
-  prevBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      if (currentStep > 0) {
-        currentStep--;
-        updateStep();
-      }
-    });
-  });
+  prevBtns.forEach(btn => btn.addEventListener("click", () => {
+    if (currentStep > 0) {
+      currentStep--;
+      updateStep();
+    }
+  }));
 
-  document.getElementById("cd-calc").addEventListener("click", () => {
+  document.getElementById("cd-calc").addEventListener("click", function () {
     if (validateStep(currentStep)) {
       calcularResultado();
       currentStep++;
       updateStep();
+
+      if (typeof hbspt === "undefined") {
+        let script = document.createElement("script");
+        script.src = "https://js-eu1.hsforms.net/forms/v2.js";
+        script.onload = loadHubspotForm;
+        document.head.appendChild(script);
+      } else {
+        loadHubspotForm();
+      }
     } else {
       alert("Por favor, introduce tus ingresos mensuales.");
     }
@@ -62,7 +63,6 @@ document.addEventListener("DOMContentLoaded", function () {
     div.innerHTML = `
       <label>Importe de la deuda (€)</label>
       <input type="number" class="cd-deuda-importe" min="0" required>
-      
       <label>Tipo de deuda</label>
       <select class="cd-deuda-tipo">
         <option value="Micros">Microcrédito</option>
@@ -72,7 +72,6 @@ document.addEventListener("DOMContentLoaded", function () {
         <option value="Descubierto">Descubierto</option>
         <option value="P.P.">Préstamo Personal</option>
       </select>
-      
       <label>¿Está en impago?</label>
       <select class="cd-deuda-impago">
         <option value="No">No</option>
@@ -91,37 +90,21 @@ document.addEventListener("DOMContentLoaded", function () {
       "Descubierto": -0.06,
       "P.P.": -0.07,
     };
-
     let totalFinal = 0;
 
     document.querySelectorAll(".cd-deuda-bloque").forEach(bloque => {
       const importe = parseFloat(bloque.querySelector(".cd-deuda-importe").value) || 0;
       const tipo = bloque.querySelector(".cd-deuda-tipo").value;
       const impago = bloque.querySelector(".cd-deuda-impago").value;
-
       let descuento = descuentos[tipo] || 0;
-
       let totalConDescuento = importe * (1 - descuento);
-
-      if (impago === "Si") {
-        totalConDescuento *= 1.005; // +0.5%
-      } else {
-        totalConDescuento *= 0.97; // -3%
-      }
-
+      totalConDescuento *= impago === "Si" ? 1.005 : 0.97;
       totalFinal += totalConDescuento;
     });
 
-    let plazo = 24;
-    if (totalFinal > 5000 && totalFinal <= 15000) {
-      plazo = 52;
-    } else if (totalFinal > 15000) {
-      plazo = 65;
-    }
-
-    const cuotaMin = 150 * 1.21; // mínimo 150€ + IVA
+    let plazo = totalFinal > 15000 ? 65 : totalFinal > 5000 ? 52 : 24;
+    const cuotaMin = 150 * 1.21;
     let cuota = totalFinal / plazo;
-
     if (cuota < cuotaMin) {
       plazo = Math.ceil(totalFinal / cuotaMin);
       cuota = totalFinal / plazo;
@@ -130,6 +113,30 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("cd-total-pagar").innerText = totalFinal.toFixed(2) + " €";
     document.getElementById("cd-cuota").innerText = cuota.toFixed(2) + " €";
     document.getElementById("cd-plazo").innerText = plazo;
+  }
+
+  function loadHubspotForm() {
+    hbspt.forms.create({
+      region: "eu1",
+      portalId: "25029379",
+      formId: "14cf8322-da79-4988-8631-56f6d7eca69f",
+      target: "#hubspot-formulario",
+      onFormReady: function($form) {
+        if (!$form.find('input[name="resumen_calculadora"]').length) {
+          const resumen = `🧾 Datos calculadora:\n` +
+                          `- Pagos actuales: ${document.getElementById("cd-pagos").value}\n` +
+                          `- Total deuda: ${document.getElementById("cd-total-pagar").innerText.replace(" €","")}\n` +
+                          `- Nueva cuota mensual: ${document.getElementById("cd-cuota").innerText.replace(" €","")}\n` +
+                          `- Plazo en meses: ${document.getElementById("cd-plazo").innerText}`;
+
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = "resumen_calculadora";
+          input.value = resumen;
+          $form[0].appendChild(input);
+        }
+      }
+    });
   }
 
   updateStep();
