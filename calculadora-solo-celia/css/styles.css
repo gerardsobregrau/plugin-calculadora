@@ -8,6 +8,17 @@
   box-shadow: 0 15px 40px rgba(0,0,0,0.08);
 }
 
+/* Styles for Calculadora Celia (namespaced with cc-) */
+.cc-wizard {
+  background: #fff;
+  padding: 40px 30px;
+  font-family: 'Poppins', sans-serif;
+  border-radius: 16px;
+  max-width: 750px;
+  margin: auto;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+}
+
 .cd-step-indicator {
   display: flex;
   justify-content: space-between;
@@ -16,7 +27,24 @@
   counter-reset: wizard;
 }
 
+.cc-step-indicator {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  position: relative;
+  counter-reset: wizard;
+}
+
 .cd-step-indicator div {
+  position: relative;
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #999;
+}
+
+.cc-step-indicator div {
   position: relative;
   flex: 1;
   text-align: center;
@@ -39,7 +67,25 @@
   font-weight: bold;
 }
 
+.cc-step-indicator div::before {
+  counter-increment: wizard;
+  content: counter(wizard);
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  background: #ccc;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto 10px auto;
+  color: white;
+  font-weight: bold;
+}
+
 .cd-step-indicator div.active::before {
+  background: #0056b3;
+}
+
+.cc-step-indicator div.active::before {
   background: #0056b3;
 }
 
@@ -47,15 +93,34 @@
   color: #0056b3;
 }
 
+.cc-step-indicator div.active {
+  color: #0056b3;
+}
+
 .cd-step {
   display: none;
   animation: fadeIn 0.4s ease-in-out;
+}
+
+.cc-step {
+  display: none;
+  animation: fadeIn 0.4s ease-in-out;
+}
+.cc-step.active {
+  display: block;
 }
 .cd-step.active {
   display: block;
 }
 
 .cd-deuda-bloque {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+}
+
+.cc-deuda-bloque {
   margin-bottom: 20px;
   padding: 15px;
   border: 1px solid #e0e0e0;
@@ -70,7 +135,19 @@
   color: #333;
 }
 
+.cc-deuda-bloque label {
+  display: block;
+  margin-bottom: 5px;
+  margin-top: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
 .cd-deuda-bloque label:first-child {
+  margin-top: 0;
+}
+
+.cc-deuda-bloque label:first-child {
   margin-top: 0;
 }
 
@@ -118,10 +195,31 @@ button:hover {
   margin-bottom: 20px;
 }
 
+.cc-result-final {
+  font-size: 20px;
+  font-weight: bold;
+  color: #0056b3;
+  margin-bottom: 20px;
+}
+
 .cd-progress {
   height: 4px;
   background: #eee;
   margin-top: 30px;
+  border-radius: 5px;
+}
+
+.cc-progress {
+  height: 4px;
+  background: #eee;
+  margin-top: 30px;
+  border-radius: 5px;
+}
+.cc-progress-bar {
+  height: 4px;
+  width: 0%;
+  background: #0056b3;
+  transition: width 0.4s ease;
   border-radius: 5px;
 }
 .cd-progress-bar {
@@ -143,35 +241,44 @@ button:hover {
     flex-direction: column;
     gap: 10px;
   }
+  .cc-step-indicator {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
 
 
 /* Contenedor del formulario HubSpot */
-#hubspot-formulario {
+#hubspot-formulario, #hubspot-formulario-celia {
   margin-top: 20px;
 }
 
 /* Mejorar la disposición de los campos */
-#hubspot-formulario form {
+#hubspot-formulario form,
+#hubspot-formulario-celia form {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
 }
 
 /* Cada campo individual */
-#hubspot-formulario form .hs-form-field {
+#hubspot-formulario form .hs-form-field,
+#hubspot-formulario-celia form .hs-form-field {
   flex: 1 1 45%; /* dos columnas, con espacio */
   min-width: 200px;
 }
 
 /* Para inputs tipo teléfono que tienen un dropdown, ajustamos */
-#hubspot-formulario form .hs-form-field.hs-phone {
+#hubspot-formulario form .hs-form-field.hs-phone,
+#hubspot-formulario-celia form .hs-form-field.hs-phone {
   flex: 1 1 100%;
 }
 
 /* Ajustar el botón enviar */
 #hubspot-formulario form input[type="submit"],
-#hubspot-formulario form button[type="submit"] {
+#hubspot-formulario form button[type="submit"],
+#hubspot-formulario-celia form input[type="submit"],
+#hubspot-formulario-celia form button[type="submit"] {
   background-color: #0056b3 !important;
   border: none !important;
   color: white !important;
@@ -185,12 +292,15 @@ button:hover {
 
 /* Hover del botón */
 #hubspot-formulario form input[type="submit"]:hover,
-#hubspot-formulario form button[type="submit"]:hover {
+#hubspot-formulario form button[type="submit"]:hover,
+#hubspot-formulario-celia form input[type="submit"]:hover,
+#hubspot-formulario-celia form button[type="submit"]:hover {
   background-color: #004999 !important;
 }
 
 /* Ajustar labels para que estén más compactos */
-#hubspot-formulario form label {
+#hubspot-formulario form label,
+#hubspot-formulario-celia form label {
   font-weight: 600;
   margin-bottom: 6px;
   display: block;
@@ -198,13 +308,15 @@ button:hover {
 }
 
 /* Añadir un poco más de espacio arriba del formulario */
-.cd-step[data-step="3"] #hubspot-formulario {
+.cd-step[data-step="3"] #hubspot-formulario,
+.cc-step[data-step="3"] #hubspot-formulario-celia {
   margin-top: 25px;
 }
 
 /* Responsivo: en móvil, los campos en una columna */
 @media (max-width: 600px) {
-  #hubspot-formulario form .hs-form-field {
+  #hubspot-formulario form .hs-form-field,
+  #hubspot-formulario-celia form .hs-form-field {
     flex: 1 1 100% !important;
   }
 }
